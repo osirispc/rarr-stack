@@ -12,10 +12,10 @@ services:
       - "7878:7878"   # Radarr
     environment:
       - VPN_SERVICE_PROVIDER=nordvpn
-      - OPENVPN_USER=yourusername
-      - OPENVPN_PASSWORD=yourpassword
-      - REGION=United_States
-      - TZ=America/New_York
+      - OPENVPN_USER=${VPN_USERNAME}
+      - OPENVPN_PASSWORD=${VPN_PASSWORD}
+      - REGION=${VPN_REGION}
+      - TZ=${TZ}
     volumes:
       - ./gluetun:/gluetun
     restart: unless-stopped
