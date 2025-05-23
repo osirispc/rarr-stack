@@ -1,0 +1,90 @@
+version: "3.8"
+
+services:
+  radarr:
+    image: lscr.io/linuxserver/radarr
+    container_name: radarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${DATA_DIR}/radarr:/config
+      - ${MOVIES_DIR}:/movies
+      - ${DOWNLOADS_DIR}:/downloads
+    ports:
+      - ${RADARR_PORT}:7878
+    networks:
+      - vpn_network
+    restart: unless-stopped
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr
+    container_name: sonarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${DATA_DIR}/sonarr:/config
+      - ${SHOWS_DIR}:/tv
+      - ${DOWNLOADS_DIR}:/downloads
+    ports:
+      - ${SONARR_PORT}:8989
+    networks:
+      - vpn_network
+    restart: unless-stopped
+
+  lidarr:
+    image: lscr.io/linuxserver/lidarr
+    container_name: lidarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${DATA_DIR}/lidarr:/config
+      - ${MUSIC_DIR}:/music
+      - ${DOWNLOADS_DIR}:/downloads
+    ports:
+      - ${LIDARR_PORT}:8686
+    networks:
+      - vpn_network
+    restart: unless-stopped
+
+  readarr:
+    image: lscr.io/linuxserver/readarr
+    container_name: readarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${DATA_DIR}/readarr:/config
+      - ${BOOKS_DIR}:/books
+      - ${DOWNLOADS_DIR}:/downloads
+    ports:
+      - ${READARR_PORT}:8787
+    networks:
+      - vpn_network
+    restart: unless-stopped
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr
+    container_name: prowlarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${DATA_DIR}/prowlarr:/config
+    ports:
+      - ${PROWLARR_PORT}:9696
+    networks:
+      - vpn_network
+    restart: unless-stopped
+
+networks:
+  vpn_network:
+    external: true
+
