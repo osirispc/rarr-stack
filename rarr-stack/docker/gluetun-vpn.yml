@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  gluetun:
+    image: qmcgaw/gluetun
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    environment:
+      - VPN_SERVICE_PROVIDER=nordvpn
+      - OPENVPN_USER=${VPN_USER}
+      - OPENVPN_PASSWORD=${VPN_PASS}
+      - REGION=United_States
+      - COUNTRY=${VPN_COUNTRY}
+      - CITY=${VPN_CITY}
+      - TZ=${TZ}
+    ports:
+      - 9091:9091     # qBittorrent web UI through VPN
+      - 8118:8118     # Optional: HTTP proxy port
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ${DATA_DIR}/qbittorrent/config:/gluetun
+    restart: unless-stopped
+    networks:
+      - vpn_network
+
+  qbittorrent:
+    image: linuxserver/qbittorrent
+    container_name: qbittorrent
+    network_mode: "service:gluetun"
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - WEBUI_PORT=${TRANSMISSION_PORT}
+    volumes:
+      - ${DATA_DIR}/qbittorrent/config:/config
+      - ${DOWNLOADS_DIR}:/downloads
+    depends_on:
+      - gluetun
+    restart: unless-stopped
+
+networks:
+  vpn_network:
+    name: vpn_network
+    driver: bridge
