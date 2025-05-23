@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  gluetun:
+    image: qmcgaw/gluetun
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - 8080:8080     # WebUI for qBittorrent
+      - 6881:6881
+      - 6881:6881/udp
+    environment:
+      - VPN_SERVICE_PROVIDER=nordvpn
+      - OPENVPN_USER=CRs3eq8N4YsXTSeS2M1KLAko
+      - OPENVPN_PASSWORD=ifyuV43zXp4BshvuPtq2XPB9
+      - SERVER_REGIONS=United States
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+    restart: unless-stopped
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent
+    container_name: qbittorrent
+    network_mode: "service:gluetun"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - WEBUI_PORT=8080
+    volumes:
+      - /mnt/data/qbittorrent-config:/config
+      - /mnt/data/downloads:/downloads
+    depends_on:
+      - gluetun
+    restart: unless-stopped
